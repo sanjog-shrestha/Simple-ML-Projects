@@ -38,24 +38,24 @@ images/
 ```
 
 **Original class distribution** (before balancing)
-![Original class distribution]
-(![alt text](image.png))
+
+![Original class distribution](image-1.png)
 
 **Balanced class distribution** (ham undersampled to match spam)
-![Balanced class distribution]
-(![alt text](image-1.png))
+
+![Balanced class distribution](image-2.png)
 
 **Word cloud — Ham emails**
-![Ham word cloud]
-(![alt text](image-2.png))
+
+![Ham word cloud](image-3.png)
 
 **Word cloud — Spam emails**
-![Spam word cloud]
-(![alt text](image-3.png))
+
+![Spam word cloud](image-4.png)
 
 **Training vs. validation accuracy**
-![Training accuracy curve]
-(![alt text](image-4.png))
+
+![Training accuracy curve](image-5.png)
 
 ## Project structure
 
@@ -112,8 +112,9 @@ run_pipeline(PipelineConfig(show_plots=False))
 - Add a confusion matrix / precision-recall breakdown instead of just accuracy, since false positives (flagging real email as spam) and false negatives matter differently in practice.
 - Experiment with a Bidirectional LSTM or a simple attention mechanism.
 
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
+
 ---
 *This is a personal learning project, not a production spam filter.*
-
-## References
-- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
