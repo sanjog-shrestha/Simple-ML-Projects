@@ -1,137 +1,208 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+"""
+Email Spam Classifier
+----------------------
+An LSTM-based text classifier that separates spam from legitimate ("ham")
+emails. The pipeline covers data loading, class balancing, text cleanup,
+tokenization/padding, model training, and evaluation.
+"""
 
 import string
+import warnings
+from dataclasses import dataclass
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import tensorflow as tf
 import nltk
 from nltk.corpus import stopwords
-from wordcloud import WordCloud
-nltk.download('stopwords')
-
-import tensorflow as tf
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from wordcloud import WordCloud
 
-import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
-data = pd.read_csv('spam_ham_dataset.csv')
-data.head()
 
-data.shape
+@dataclass
+class PipelineConfig:
+    """Central place for the knobs used throughout the pipeline."""
 
-sns.countplot(x='label', data=data)
-plt.show()
+    csv_path: str = "spam_ham_dataset.csv"
+    text_column: str = "text"
+    label_column: str = "label"
+    max_sequence_len: int = 100
+    embedding_dim: int = 32
+    lstm_units: int = 16
+    dense_units: int = 32
+    test_fraction: float = 0.2
+    random_seed: int = 42
+    batch_size: int = 32
+    max_epochs: int = 20
+    show_plots: bool = True
 
-ham_msg = data[data['label'] == 'ham']
-spam_msg = data[data['label'] == 'spam']
 
-# Downsample Ham emails to match the number of Spam emails
-ham_msg_balanced = ham_msg.sample(n=len(spam_msg), random_state=42)
+def ensure_nltk_resources() -> None:
+    """Download the stopword corpus if it isn't already available locally."""
+    nltk.download("stopwords", quiet=True)
 
-# Combine balanced data
-balanced_data = pd.concat([ham_msg_balanced, spam_msg]).reset_index(drop=True)
 
-# Visualize the balanced dataset
-sns.countplot(x='label', data=balanced_data)
-plt.title("Balanced Distribution of Spam and Ham Emails")
-plt.xticks(ticks=[0, 1], labels=['Ham (Not Spam)', 'Spam'])
-plt.show()
+def load_dataset(cfg: PipelineConfig) -> pd.DataFrame:
+    df = pd.read_csv(cfg.csv_path)
+    print(f"Loaded {len(df)} rows from {cfg.csv_path}")
+    return df
 
-balanced_data['text'] = balanced_data['text'].str.replace('Subject', '')
-balanced_data.head()
 
-punctuations_list = string.punctuation
-def remove_punctuations(text):
-    temp = str.maketrans('', '', punctuations_list)
-    return text.translate(temp)
+def plot_class_counts(df: pd.DataFrame, cfg: PipelineConfig, title: str) -> None:
+    if not cfg.show_plots:
+        return
+    sns.countplot(x=cfg.label_column, data=df)
+    plt.title(title)
+    plt.show()
 
-balanced_data['text']= balanced_data['text'].apply(lambda x: remove_punctuations(x))
-balanced_data.head()
 
-def remove_stopwords(text):
-  stop_words = stopwords.words('english')
+def balance_classes(df: pd.DataFrame, cfg: PipelineConfig) -> pd.DataFrame:
+    """Undersample the majority class so ham/spam counts match."""
+    spam_rows = df[df[cfg.label_column] == "spam"]
+    ham_rows = df[df[cfg.label_column] == "ham"].sample(
+        n=len(spam_rows), random_state=cfg.random_seed
+    )
+    balanced = pd.concat([ham_rows, spam_rows]).sample(
+        frac=1, random_state=cfg.random_seed
+    ).reset_index(drop=True)
+    return balanced
 
-  imp_words = []
 
-  for word in str(text).split():
-    word = word.lower()
+_PUNCT_TABLE = str.maketrans("", "", string.punctuation)
 
-    if word not in stop_words:
-      imp_words.append(word)
 
-  output = " ".join(imp_words)
+def strip_punctuation(text: str) -> str:
+    return text.translate(_PUNCT_TABLE)
 
-  return output 
 
-balanced_data['text'] = balanced_data['text'].apply(lambda text: remove_stopwords(text))
-balanced_data.head()
+def clean_text_column(df: pd.DataFrame, cfg: PipelineConfig) -> pd.DataFrame:
+    """Remove the leading 'Subject' marker, punctuation, and stopwords."""
+    stop_set = set(stopwords.words("english"))
 
-def plot_word_cloud(data, typ):
-  email_corpus = " ".join(data['text'])
-  wc = WordCloud(background_color='black', max_words=100, width=800, height=400).generate(email_corpus)
-  plt.figure(figsize=(7, 7))
-  plt.imshow(wc, interpolation='bilinear')
-  plt.title(f'Word Cloud for {typ} Emails', fontsize=15)
-  plt.axis('off')
-  plt.show()
+    def _clean(raw: str) -> str:
+        no_subject = raw.replace("Subject", "", 1)
+        no_punct = strip_punctuation(no_subject)
+        tokens = [w.lower() for w in no_punct.split() if w.lower() not in stop_set]
+        return " ".join(tokens)
 
-plot_word_cloud(balanced_data[balanced_data['label'] == 'ham'], typ='Non-Spam')
-plot_word_cloud(balanced_data[balanced_data['label'] == 'spam'], typ='Spam')
+    df = df.copy()
+    df[cfg.text_column] = df[cfg.text_column].apply(_clean)
+    return df
 
-train_X, test_X, train_Y, test_Y = train_test_split(
-    balanced_data['text'], balanced_data['label'], test_size=0.2, random_state=42
-)
 
-tokenizer = Tokenizer()
-tokenizer.fit_on_texts(train_X)
+def render_word_cloud(df: pd.DataFrame, cfg: PipelineConfig, category: str) -> None:
+    if not cfg.show_plots:
+        return
+    corpus = " ".join(df[df[cfg.label_column] == ("spam" if category == "Spam" else "ham")][cfg.text_column])
+    cloud = WordCloud(background_color="black", max_words=100, width=800, height=400).generate(corpus)
+    plt.figure(figsize=(7, 7))
+    plt.imshow(cloud, interpolation="bilinear")
+    plt.title(f"Most Frequent Words — {category} Emails", fontsize=15)
+    plt.axis("off")
+    plt.show()
 
-train_sequences = tokenizer.texts_to_sequences(train_X)
-test_sequences = tokenizer.texts_to_sequences(test_X)
 
-max_len = 100  # Maximum sequence length
-train_sequences = pad_sequences(train_sequences, maxlen=max_len, padding='post', truncating='post')
-test_sequences = pad_sequences(test_sequences, maxlen=max_len, padding='post', truncating='post')
+def vectorize_text(train_texts, test_texts, cfg: PipelineConfig):
+    """Fit a tokenizer on training text only, then encode + pad both splits."""
+    tokenizer = Tokenizer()
+    tokenizer.fit_on_texts(train_texts)
 
-train_Y = (train_Y == 'spam').astype(int)
-test_Y = (test_Y == 'spam').astype(int)
+    train_ids = pad_sequences(
+        tokenizer.texts_to_sequences(train_texts),
+        maxlen=cfg.max_sequence_len, padding="post", truncating="post",
+    )
+    test_ids = pad_sequences(
+        tokenizer.texts_to_sequences(test_texts),
+        maxlen=cfg.max_sequence_len, padding="post", truncating="post",
+    )
+    return train_ids, test_ids, tokenizer
 
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=32, input_length=max_len),
-    tf.keras.layers.LSTM(16),
-    tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(1, activation='sigmoid')  # Output layer
-])
 
-model.compile(
-    loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-    optimizer='adam',
-    metrics=['accuracy']
-)
+def build_model(vocab_size: int, cfg: PipelineConfig) -> tf.keras.Model:
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Embedding(
+            input_dim=vocab_size, output_dim=cfg.embedding_dim, input_length=cfg.max_sequence_len
+        ),
+        tf.keras.layers.LSTM(cfg.lstm_units),
+        tf.keras.layers.Dense(cfg.dense_units, activation="relu"),
+        tf.keras.layers.Dense(1, activation="sigmoid"),
+    ])
+    model.compile(
+        loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+        optimizer="adam",
+        metrics=["accuracy"],
+    )
+    return model
 
-model.summary()
 
-es = EarlyStopping(patience=3, monitor='val_accuracy', restore_best_weights=True)
-lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, verbose=0)
+def train_model(model: tf.keras.Model, train_X, train_Y, test_X, test_Y, cfg: PipelineConfig):
+    callbacks = [
+        EarlyStopping(patience=3, monitor="val_accuracy", restore_best_weights=True),
+        ReduceLROnPlateau(monitor="val_loss", factor=0.5, verbose=0),
+    ]
+    return model.fit(
+        train_X, train_Y,
+        validation_data=(test_X, test_Y),
+        epochs=cfg.max_epochs,
+        batch_size=cfg.batch_size,
+        callbacks=callbacks,
+    )
 
-history = model.fit(
-    train_sequences, train_Y,
-    validation_data=(test_sequences, test_Y),
-    epochs=20,
-    batch_size=32,
-    callbacks=[es, lr]
-)
 
-test_loss, test_accuracy = model.evaluate(test_sequences, test_Y)
-print(f'Test Loss: {test_loss}, Test Accuracy: {test_accuracy}')
+def plot_training_curves(history, cfg: PipelineConfig) -> None:
+    if not cfg.show_plots:
+        return
+    plt.plot(history.history["accuracy"], label="Training Accuracy")
+    plt.plot(history.history["val_accuracy"], label="Validation Accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.title("Model Accuracy Over Training")
+    plt.legend()
+    plt.show()
 
-plt.plot(history.history['accuracy'], label='Training Accuracy')
-plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.title('Model Accuracy')
-plt.legend()
-plt.show()
+
+def run_pipeline(cfg: PipelineConfig = PipelineConfig()) -> None:
+    ensure_nltk_resources()
+
+    raw_df = load_dataset(cfg)
+    plot_class_counts(raw_df, cfg, "Original Class Distribution")
+
+    balanced_df = balance_classes(raw_df, cfg)
+    plot_class_counts(balanced_df, cfg, "Balanced Class Distribution (Ham vs Spam)")
+
+    cleaned_df = clean_text_column(balanced_df, cfg)
+
+    render_word_cloud(cleaned_df, cfg, "Non-Spam")
+    render_word_cloud(cleaned_df, cfg, "Spam")
+
+    train_texts, test_texts, train_labels, test_labels = train_test_split(
+        cleaned_df[cfg.text_column],
+        cleaned_df[cfg.label_column],
+        test_size=cfg.test_fraction,
+        random_state=cfg.random_seed,
+    )
+
+    train_X, test_X, tokenizer = vectorize_text(train_texts, test_texts, cfg)
+    train_Y = (train_labels == "spam").astype(int).to_numpy()
+    test_Y = (test_labels == "spam").astype(int).to_numpy()
+
+    model = build_model(vocab_size=len(tokenizer.word_index) + 1, cfg=cfg)
+    model.summary()
+
+    history = train_model(model, train_X, train_Y, test_X, test_Y, cfg)
+
+    test_loss, test_accuracy = model.evaluate(test_X, test_Y)
+    print(f"Test Loss: {test_loss:.4f} | Test Accuracy: {test_accuracy:.4f}")
+
+    plot_training_curves(history, cfg)
+
+
+if __name__ == "__main__":
+    run_pipeline()
