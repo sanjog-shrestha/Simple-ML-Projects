@@ -65,11 +65,11 @@ Running the notebook produces a results table and two comparison charts (bar cha
 
 **Model performance comparison**
 
-![Model performance bar chart](images/model_performance_bars.png)
+![Model performance bar chart](image.png)
 
 **Model performance trends**
 
-![Model performance line chart](images/model_performance_lines.png)
+![Model performance line chart](image-1.png)
 
 > To save these for the `images/` folder, add `plt.savefig("images/model_performance_bars.png", bbox_inches="tight")` (and similarly for the line chart) right before each `plt.show()` call.
 
