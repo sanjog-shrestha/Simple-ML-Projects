@@ -38,19 +38,24 @@ images/
 ```
 
 **Original class distribution** (before balancing)
-![Original class distribution](![alt text](image.png))
+![Original class distribution]
+(![alt text](image.png))
 
 **Balanced class distribution** (ham undersampled to match spam)
-![Balanced class distribution](![alt text](image-1.png))
+![Balanced class distribution]
+(![alt text](image-1.png))
 
 **Word cloud — Ham emails**
-![Ham word cloud](![alt text](image-2.png))
+![Ham word cloud]
+(![alt text](image-2.png))
 
 **Word cloud — Spam emails**
-![Spam word cloud](![alt text](image-3.png))
+![Spam word cloud]
+(![alt text](image-3.png))
 
 **Training vs. validation accuracy**
-![Training accuracy curve](![alt text](image-4.png))
+![Training accuracy curve]
+(![alt text](image-4.png))
 
 ## Project structure
 
