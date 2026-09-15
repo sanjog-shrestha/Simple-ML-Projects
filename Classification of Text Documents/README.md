@@ -56,9 +56,8 @@ Running the script prints the test-set accuracy and displays a confusion matrix 
 
 **Confusion matrix**
 
-![Confusion matrix](images/confusion_matrix.png)
+![Confusion matrix](image.png)
 
-> To save this for the `images/` folder, add `plt.savefig("images/confusion_matrix.png", bbox_inches="tight")` right before `plt.show()`.
 
 ## Notes on this implementation
 
