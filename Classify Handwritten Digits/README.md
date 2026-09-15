@@ -64,7 +64,7 @@ The MLP reaches noticeably higher accuracy in far fewer epochs, confirming the t
 
 **Softmax baseline — training log**
 
-(image.png)
+(images.png)
 
 **MLP — training log and sample prediction**
 
