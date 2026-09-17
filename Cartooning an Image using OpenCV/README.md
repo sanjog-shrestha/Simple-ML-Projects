@@ -60,7 +60,6 @@ The cartoonized result is displayed and saved as `cartoon_output.jpg`.
 
 ![Cartoon effect result](image.png)
 
-> To populate the `images/` folder: copy your source image in as `images/original.jpg`, and copy the script's saved `cartoon_output.jpg` in as `images/cartoon_output.jpg` (or add a `plt.savefig("images/cartoon_output.jpg", bbox_inches="tight")` call right before `plt.show()` in `show_image` to generate it automatically).
 
 ## Notes on this implementation
 
