@@ -63,7 +63,7 @@ python main.py
 
 **Original image**
 
-![Original image](Original-Image.jpg)
+![Original image](Original-Image.png)
 
 **Image with bounding boxes**
 
