@@ -78,12 +78,6 @@ On one run, the *live* MLP model predicted `4` for a test digit labeled `1`, but
 
 Running the script also displays a sample training digit and a test digit alongside the MLP's prediction, then confirms the reloaded model's prediction on that same digit.
 
-## Notes on this implementation
-
-- The original file contained two separate, duplicate MNIST scripts pasted together, each loading and preprocessing the dataset independently. This version loads the data once and reuses it for both models.
-- Log suppression is now done via `tf.get_logger().setLevel("ERROR")`, the modern TF2-native equivalent of `tf.compat.v1.logging.set_verbosity(...)` — the `compat.v1` call still works but isn't necessary in TF2.
-- The two separate `display()` / `draw()` helper functions were merged into a single `show_digit()` that also supports showing a prediction alongside the true label.
-- Both models share one `evaluate_model()` helper and are trained back-to-back for a direct, side-by-side accuracy comparison.
 
 ## Things I'd like to try next
 
@@ -91,6 +85,10 @@ Running the script also displays a sample training digit and a test digit alongs
 - Track training/validation accuracy curves per epoch, not just the final test accuracy.
 - Add a confusion matrix to see which digits get misclassified most often (e.g. 4s vs. 9s).
 - Print the full softmax probability vector (not just `argmax`) for sample predictions, to check confidence on borderline cases like the `1` vs. `4` mix-up observed above.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 
 ---
 *This is a personal learning project, not a production classifier.*
