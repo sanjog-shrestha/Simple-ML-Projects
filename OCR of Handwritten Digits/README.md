@@ -64,18 +64,16 @@ Running the script displays a sample digit cell, prints the test accuracy, and s
 ![Confusion matrix](image-1.png)
 
 
-## Notes on this implementation
-
-- The original script had no check for a failed image load — `cv2.imread()` silently returns `None` if the file isn't found, which would then crash with a confusing error a few lines later in `cvtColor`. This version raises a clear `FileNotFoundError` immediately if the image can't be read.
-- The try/except fallback for `cv2.ml.KNearest.create()` vs. `cv2.ml.KNearest_create()` (handling OpenCV version differences) was already solid in the original and is preserved as-is.
-- Cell dimensions and sample counts are computed from the actual array shapes rather than hardcoded, so the pipeline adapts if `num_rows`/`num_cols` in `PipelineConfig` are changed.
-- Added a sample-cell preview and a confusion matrix, since the original only printed a single accuracy number with no way to see which digits were actually being confused.
 
 ## Things I'd like to try next
 
 - Try different values of `k` and plot accuracy vs. `k` to find the best neighbor count.
 - Compare against a different distance metric or a different classifier (e.g. SVM) on the same data split.
 - Add per-class accuracy/precision so it's clear if some digits are harder to classify than others.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 
 ---
 *This is a personal learning project, not a production OCR system.*
