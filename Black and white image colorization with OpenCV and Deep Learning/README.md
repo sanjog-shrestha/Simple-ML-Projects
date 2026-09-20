@@ -55,6 +55,10 @@ Running the script displays the original image, the grayscale input, and both mo
 
 ![Colorization comparison](image.png)
 
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
+
 
 ---
 *This is a personal learning project, not a production colorization tool.*
