@@ -59,17 +59,17 @@ Running the script prints the test-set accuracy and displays a confusion matrix 
 ![Confusion matrix](image.png)
 
 
-## Notes on this implementation
-
-- The original script imported `CountVectorizer` twice and left `seaborn`, `matplotlib`, `accuracy_score`, and `confusion_matrix` unused — it computed predictions but never evaluated or visualized them. This version removes the duplicate import and completes the evaluation/visualization the imports were set up for.
-- Organized into typed, documented functions rather than one flat block, so each stage of the pipeline (loading, vectorizing, training, evaluating, plotting) can be modified or reused independently.
-- All tunable parameters (file path, column names, test split, random seed) live in one `PipelineConfig` dataclass instead of being scattered through the code.
 
 ## Things I'd like to try next
 
 - Compare `CountVectorizer` against `TfidfVectorizer` to see if weighting rare words differently improves results.
 - Try a `SGDClassifier` or `LogisticRegression` baseline alongside Naive Bayes for comparison.
 - Add precision/recall/F1 per class, not just overall accuracy, especially if the dataset is imbalanced.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
+
 
 ---
 *This is a personal learning project, not a production classifier.*
