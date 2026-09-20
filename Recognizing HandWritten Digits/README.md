@@ -66,7 +66,6 @@ Running the script shows a 4x4 grid of sample digits, prints per-iteration train
 
 ![Confusion matrix](image-2.png)
 
-> To save these for the `images/` folder, add a `plt.savefig("images/<name>.png", bbox_inches="tight")` call right before each respective `plt.show()`.
 
 
 ## Things I'd like to try next
