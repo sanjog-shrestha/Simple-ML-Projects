@@ -61,17 +61,15 @@ The cartoonized result is displayed and saved as `cartoon_output.jpg`.
 ![Cartoon effect result](image.png)
 
 
-## Notes on this implementation
-
-- The original script used `google.colab.patches.cv2_imshow`, which only works inside Google Colab — running it anywhere else (a local script, Jupyter, VS Code) would fail on that import alone. This version uses `matplotlib` to display the result instead, which works in any environment.
-- The original called a bare `exit()` if the image failed to load, which works fine as a standalone script but isn't reusable if this code is ever imported as a module elsewhere. This version raises a `FileNotFoundError` instead, which callers can catch or let propagate naturally.
-- All the "magic numbers" (blur kernel size, adaptive threshold block size/constant, bilateral filter parameters) now live in one `PipelineConfig` dataclass instead of being inlined into function calls, making them easy to tune and experiment with.
-
 ## Things I'd like to try next
 
 - Try different `edge_block_size`/`edge_c` combinations to see how outline thickness/sensitivity changes.
 - Add color quantization (e.g. k-means on pixel colors) before the bilateral filter for an even more "flat cartoon" palette.
 - Batch-process a folder of images instead of a single hardcoded file.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 
 ---
 *This is a personal learning project, not a production image filter.*
