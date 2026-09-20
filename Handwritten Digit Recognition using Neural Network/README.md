@@ -67,5 +67,8 @@ Running the script prints shape/accuracy info as it progresses, plots a training
 ![Sample predictions](image-1.png)![](image-2.png)![](image-3.png)![](image-4.png)![](image-5.png)
 
 
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 ---
 *This is a personal learning project, not a production classifier.*
