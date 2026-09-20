@@ -69,18 +69,15 @@ python main.py
 
 ![Image with bounding boxes](image.png)
 
-## Notes on this implementation
-
-- **Fixed a real issue**: the original drew a rectangle for *every* entry returned by `image_to_data`, including page/block/paragraph/line-level entries with empty text and non-word confidence scores — not just individual words. This version filters to word-level boxes with actual non-empty text (and an optional minimum confidence), so the bounding-box visualization actually reflects detected words instead of a cluttered stack of redundant boxes.
-- Added a clear `FileNotFoundError` if the image can't be loaded, instead of letting `cv2.cvtColor` fail on `None` with a confusing error a few lines later.
-- `extract_word_boxes` returns structured dictionaries (text, confidence, bbox) rather than raw parallel arrays, making the filtered results easier to inspect, log, or reuse elsewhere (e.g. exporting to JSON) beyond just drawing boxes.
-- All drawing/filtering parameters (box color, thickness, minimum confidence) live in one `PipelineConfig` dataclass instead of being hardcoded inline.
-
 ## Things I'd like to try next
 
 - Print each detected word alongside its confidence score, to spot low-confidence/likely-wrong detections at a glance.
 - Try preprocessing (grayscale, thresholding, deskewing) before OCR, since Tesseract's accuracy is very sensitive to image quality.
 - Group word boxes back into lines/paragraphs (using the `line_num`/`par_num` fields already present in `image_to_data`) for structured text reconstruction instead of just a flat word list.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 
 ---
 *This is a personal learning project, not a production OCR pipeline.*
