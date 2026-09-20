@@ -64,18 +64,17 @@ Running the script shows a grid of sample images, trains for 30 epochs (this tak
 ![Training curves](image-1.png)
 
 
-## Notes on this implementation
-
-- **Fixed a real gap**: the original script trained the model and plotted train/validation curves, but never actually evaluated it on the held-out test set — there was no way to know the model's real generalization accuracy, only its performance on data seen during training/validation. This version adds `evaluate_model()`, which runs `model.evaluate()` on the test set and prints the final test loss/accuracy.
-- All hyperparameters (epochs, batch size, validation split, number of classes) now live in one `PipelineConfig` dataclass instead of being inlined into the `model.fit(...)` call.
-- Class names are pulled into a single `CLASS_NAMES` constant used consistently for both the sample preview and (potentially) any future prediction labeling, instead of being defined once and only used in one place.
-
 ## Things I'd like to try next
 
 - Add data augmentation (`RandomFlip`, `RandomRotation`, etc.) to reduce overfitting further and likely improve test accuracy.
 - Add a confusion matrix on the test set predictions to see which classes get confused most often (e.g. cat vs. dog).
 - Try `EarlyStopping` and `ReduceLROnPlateau` callbacks to avoid training a fixed 30 epochs regardless of whether the model has already converged.
 - Compare this custom CNN against a pretrained backbone (e.g. `MobileNetV2`) fine-tuned on CIFAR-10.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
+
 
 ---
 *This is a personal learning project, not a production image classifier.*
