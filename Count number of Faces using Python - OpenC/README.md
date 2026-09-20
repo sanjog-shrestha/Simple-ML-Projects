@@ -55,18 +55,17 @@ pip install opencv-python numpy dlib
 2. Run the cell and grant camera permission when the browser prompts.
 3. Click the video (or the red instruction text) to stop the stream.
 
-## Notes on this implementation
-
-- The JavaScript block is left untouched — it's dense, but it's working Colab boilerplate for webcam access, and rewriting it risks breaking browser-side behavior for no real benefit.
-- The original used a manually incremented `i` counter (`i = 0`, then `i += 1` inside the loop) to number faces; this version uses `enumerate(faces, start=1)` instead, which is more idiomatic and removes the manual counter variable.
-- All the drawing constants (box color, thickness, label color, font, frame size) now live in one `PipelineConfig` dataclass instead of being inlined into the drawing calls.
-- The face-detection and overlay-drawing logic was extracted into named functions (`detect_faces`, `draw_face_overlay`, `overlay_to_data_url`) so each responsibility (detect vs. draw vs. encode) is separately readable and testable, rather than all inlined in one long `while` loop.
 
 ## Things I'd like to try next
 
 - Swap dlib's HOG detector for a CNN-based one (`dlib.cnn_face_detection_model_v1`) for better accuracy on angled/partially occluded faces, at the cost of speed.
 - Add face landmark detection (dlib's 68-point predictor) to draw facial features, not just bounding boxes.
 - Track a rolling FPS counter using the `create`/`show`/`capture` timing data already returned by the JS bridge, to see where time is actually being spent per frame.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
+
 
 ---
 *This is a personal learning project, not a production surveillance or biometric system.*
