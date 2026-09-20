@@ -58,13 +58,6 @@ Running the script logs training loss every 100 steps, plots a full loss curve, 
 
 ![Training loss curve](image.png)
 
-## Notes on this implementation
-
-- **Fixed a real bug**: the original script referenced `batch_size` in the `DataLoader` calls *before* it was defined (it only appeared later, under "Hyper Parameters") — this would raise a `NameError` immediately on a fresh run. This version defines all hyperparameters in `PipelineConfig` up front, before anything that depends on them.
-- Removed `torch.autograd.Variable` — it's been unnecessary since PyTorch 0.4, as tensors support autograd natively now. Using it today only adds noise without changing behavior.
-- Wrapped evaluation in `model.eval()` and `torch.no_grad()`, which wasn't done in the original. It doesn't change results for this particular model (no dropout/batchnorm), but it's the correct pattern and avoids wasted memory/computation from unnecessary gradient tracking during inference.
-- Per-step loss is now recorded into a list and plotted, instead of only being printed periodically — makes it possible to see the full training trajectory, not just sampled checkpoints.
-- Removed the trailing attribution comment (`# This code is modified by Susobhan Akhuli`) since this version has been substantially rewritten.
 
 ## Things I'd like to try next
 
@@ -72,6 +65,10 @@ Running the script logs training loss every 100 steps, plots a full loss curve, 
 - Track test accuracy per epoch instead of only at the very end, to see how quickly the model converges.
 - Try `Adam` instead of plain SGD and compare convergence speed.
 - Move training to GPU (`.to(device)`) if available, for faster iteration on larger models.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 
 ---
 *This is a personal learning project, not a production classifier.*
