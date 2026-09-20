@@ -68,11 +68,6 @@ Running the script shows a 4x4 grid of sample digits, prints per-iteration train
 
 > To save these for the `images/` folder, add a `plt.savefig("images/<name>.png", bbox_inches="tight")` call right before each respective `plt.show()`.
 
-## Notes on this implementation
-
-- The original script split the data with a fixed slice (`x[:1000]` / `x[1000:]`) rather than an actual train/test split function. This version uses `train_test_split(..., stratify=y)` instead, which both shuffles the data and guarantees proportional class representation in each split — a plain positional slice offers neither guarantee.
-- Added a confusion matrix, since the original only checked accuracy and manually eyeballed the first 50 predictions vs. true labels (`predictions[:50]` / `y_test[:50]`) rather than a systematic breakdown.
-- All hyperparameters (hidden layer size, activation, solver, learning rate, etc.) live in one `PipelineConfig` dataclass instead of being inlined into the `MLPClassifier(...)` call, making them easy to tune and log.
 
 ## Things I'd like to try next
 
@@ -80,6 +75,10 @@ Running the script shows a 4x4 grid of sample digits, prints per-iteration train
 - Compare `MLPClassifier` against a simpler baseline (e.g. `LogisticRegression` or `KNeighborsClassifier`) on the same split.
 - Use `GridSearchCV` to tune `alpha`, `learning_rate_init`, and hidden layer size systematically instead of guessing.
 - Show a handful of specific misclassified digits alongside their predicted vs. true labels.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
 
 ---
 *This is a personal learning project, not a production OCR system.*
