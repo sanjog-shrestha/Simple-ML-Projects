@@ -79,12 +79,6 @@ Running the notebook produces a results table and two comparison charts (bar cha
 - All three models share one `compile_and_fit` / `evaluate` helper pair, and are trained through a single loop over `model_builders`, so adding a fourth architecture later only requires adding one dictionary entry — not duplicating a training block.
 - The script is organized into 8 labeled steps (see comments in `main.py`) rather than one long unstructured block, while staying leaner than the original (129 lines vs. 145).
 
-## Things I'd like to try next
-
-- Add k-fold cross-validation instead of a single train/test split for more reliable metric estimates.
-- Try a lightweight transformer (e.g. DistilBERT) as a fourth comparison point.
-- Report a confusion matrix per model, since precision/recall trade-offs matter more than accuracy for spam filtering.
-- Fine-tune the USE encoder (`trainable=True`) and compare against the frozen version.
 
 ## References
 
