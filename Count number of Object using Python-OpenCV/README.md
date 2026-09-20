@@ -60,18 +60,18 @@ python main.py
 ![Detected coins](image.png)
 
 
-## Notes on this implementation
 
-- **Fixed a real bug**: the original called `cv2.dilate(canny, (1, 1), iterations=0)` — with `iterations=0`, dilation does nothing at all, so that step was silently a no-op. This version uses `iterations=1` with a proper `MORPH_ELLIPSE` structuring element so dilation actually runs and helps close small gaps in the edges.
-- Added contour area filtering (`min_contour_area`), since raw Canny + external-contour output often includes tiny noise blobs that would otherwise inflate the coin count. The original counted every contour returned, with no filtering.
-- The original only printed the coin count — it drew contours onto an image but never displayed it. This version shows the annotated result so you can visually verify the detection matches the printed count.
-- All the "magic numbers" (blur kernel size, Canny thresholds, dilation settings, minimum contour area) now live in one `PipelineConfig` dataclass instead of being inlined, making them easy to tune per image.
 
 ## Things I'd like to try next
 
 - Try `cv2.HoughCircles` as an alternative/complementary method, since coins are circular — it might be more robust than generic contour detection for this specific shape.
 - Add adaptive thresholding as a preprocessing option for images with uneven lighting.
 - Estimate coin denominations by contour size/radius, not just count total coins.
+
+## References
+
+- [GeeksforGeeks — Machine Learning Projects](https://www.geeksforgeeks.org/machine-learning/machine-learning-projects/) — used as a general reference/inspiration while working on this project.
+
 
 ---
 *This is a personal learning project, not a production coin-counting system.*
