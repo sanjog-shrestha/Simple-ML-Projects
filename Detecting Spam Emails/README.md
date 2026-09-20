@@ -103,7 +103,6 @@ from main import PipelineConfig, run_pipeline
 run_pipeline(PipelineConfig(show_plots=False))
 ```
 
-> **Tip:** the script currently only calls `plt.show()`, so plots appear on screen but aren't saved. To auto-save them for the `images/` folder, add a `plt.savefig(...)` call right before each `plt.show()` in `main.py` — e.g. `plt.savefig("images/wordcloud_spam.png", bbox_inches="tight")`.
 
 ## Things I'd like to try next
 
